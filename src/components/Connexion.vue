@@ -19,7 +19,7 @@
               :rules="[required]"
               class="mb-2"
               clearable
-              label="Email"
+              label="Email ou Surnom"
             ></v-text-field>
 
             <v-text-field
@@ -33,7 +33,9 @@
               label="Mot de passe"
               placeholder="Enter your password"
             ></v-text-field>
-            <span color="primary"><a @click="$router.push('Recover')">Mot de passe oublié?</a></span>
+            <v-row justify="start">
+              <v-btn  flat class="text-blue" @click="$router.push('Recover')"  >Mot de passe oublié?</v-btn>
+            </v-row>
             <br>
             
 
@@ -87,7 +89,7 @@ export default {
           this.loading = true
         await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(async(r) => {
           await r.data.forEach(element => {
-            if(element.email == this.email && element.password == this.password){
+            if((element.email == this.email || element.last == this.email) && element.password == this.password){
               this.loading = false
               this.$store.state.auth.user = element._id
               this.$store.state.auth.username = element.first + ' ' + element.last

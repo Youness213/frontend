@@ -36,7 +36,7 @@
       <v-col cols="12" xs="12" sm="4" md="3" lg="2" v-for="( v ) in     Teams    " :key="v.ID">
         <v-hover>
           <template v-slot:default="{ isHovering, props }">
-            <v-card max-height="200" max-width="200" v-bind="props" :elevation="isHovering ? 20 : 5">
+            <v-card max-height="200" max-width="200" v-bind="props" :elevation="isHovering ? 20 : 5" :loading="loading">
               <v-row justify="center" class="mt-2 mb-1">
                 <v-avatar size="64">
                   <v-img :src="v.avatar"></v-img>
@@ -71,23 +71,10 @@ export default {
       Team: {},
       Users: [],
       TeamsCopy: [],
-      todos: true,
       userId: '',
       snackbar: false,
       editMode: false,
-      newTitle: "",
-      newStatus: "",
       indexToEdit: "",
-      drag: true,
-      dialog: false,
-      title: '',
-      content: '',
-      due: null,
-      id: null,
-      alerta: false,
-      dateRules: [
-        v => (v.length >= 4) || 'Format invalide'
-      ],
       loading: false,
     }
   },
@@ -120,131 +107,144 @@ export default {
       }
     },
     async changeStatus(status, value) {
-      if(status !== 'Amis'){
-        let currentuser = this.Team
-      let senconduser = await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
-        return r.data.filter(function (item) {
-          return item.user === value._id
-        })
-      })
-      senconduser = senconduser[0]
-      let user = this.$store.state.auth.user
-      switch (status) {
-        case 'En Attente':
-          currentuser.friends = currentuser.friends.filter(function (item) {
-            return item.user !== value._id
-          })
-          senconduser.friends = senconduser.friends.filter(function (item) {
-            return item.user !== user
-          })
-          break;
-
-        case 'Ajouter':
-          var newfriend = { user: value._id, status: 'En Attente' }
-          var newask = { user: user, status: 'Demande' }
-          if (currentuser.friends === null) {
-            currentuser = {
-              user: currentuser.user,
-              friends: [],
-              _id: currentuser._id
-            }
-          }
-          if (senconduser.friends === null) {
-            senconduser = {
-              user: senconduser.user,
-              friends: [],
-              _id: senconduser._id
-            }
-          }
-          currentuser.friends.push(newfriend)
-          senconduser.friends.push(newask)
-          break;
-
-        case 'Demande':
-          try {
-            Array.prototype.forEach.call(currentuser.friends, item => {
-              if (item.user === value._id) {
-                item.status = 'Amis'
-              }
+      if (!this.loading) {
+        this.loading = true
+        if (status !== 'Amis') {
+          let currentuser = this.Team
+          let senconduser = await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
+            return r.data.filter(function (item) {
+              return item.user === value._id
             })
-            Array.prototype.forEach.call(senconduser.friends, item => {
-              if (item.user === user) {
-                item.status = 'Amis'
+          })
+          senconduser = senconduser[0]
+          let user = this.$store.state.auth.user
+          switch (status) {
+            case 'En Attente':
+              currentuser.friends = currentuser.friends.filter(function (item) {
+                return item.user !== value._id
+              })
+              senconduser.friends = senconduser.friends.filter(function (item) {
+                return item.user !== user
+              })
+              break;
+
+            case 'Ajouter':
+              var newfriend = { user: value._id, status: 'En Attente' }
+              var newask = { user: user, status: 'Demande' }
+              if (currentuser.friends === null) {
+                currentuser = {
+                  user: currentuser.user,
+                  friends: [],
+                  _id: currentuser._id
+                }
               }
-            })
-          } catch (e) {
-            console.log(e)
+              if (senconduser.friends === null) {
+                senconduser = {
+                  user: senconduser.user,
+                  friends: [],
+                  _id: senconduser._id
+                }
+              }
+              currentuser.friends.push(newfriend)
+              senconduser.friends.push(newask)
+              break;
+
+            case 'Demande':
+              try {
+                Array.prototype.forEach.call(currentuser.friends, item => {
+                  if (item.user === value._id) {
+                    item.status = 'Amis'
+                  }
+                })
+                Array.prototype.forEach.call(senconduser.friends, item => {
+                  if (item.user === user) {
+                    item.status = 'Amis'
+                  }
+                })
+              } catch (e) {
+                console.log(e)
+              }
+              break;
+            default:
+              break;
           }
-          break;
-        default:
-          break;
+          await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
+          await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
+          this.saveOrder()
+          this.loading = false
+        }
       }
-      await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
-      await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
-      this.saveOrder()
-      }
+
     },
     async deleteFriend() {
-      let currentuser = this.Team
-      let senconduserid = this.indexToEdit
-      let senconduser = await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
-        return r.data.filter(function (item) {
-          return item.user === senconduserid
+      if (!this.loading) {
+        this.loading = true
+        let currentuser = this.Team
+        let senconduserid = this.indexToEdit
+        let senconduser = await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
+          return r.data.filter(function (item) {
+            return item.user === senconduserid
+          })
         })
-      })
-      senconduser = senconduser[0]
-      let user = this.$store.state.auth.user
-      currentuser.friends = currentuser.friends.filter(function (item) {
-        return item.user !== senconduserid 
-      })
-      senconduser.friends = senconduser.friends.filter(function (item) {
-        return item.user !== user
-      })
-      await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
-      await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
-      this.saveOrder();
+        senconduser = senconduser[0]
+        let user = this.$store.state.auth.user
+        currentuser.friends = currentuser.friends.filter(function (item) {
+          return item.user !== senconduserid
+        })
+        senconduser.friends = senconduser.friends.filter(function (item) {
+          return item.user !== user
+        })
+        await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
+        await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
+        this.saveOrder();
+        this.loading = false
+      }
     },
     async saveOrder() {
-      var user = this.$store.state.auth.user
-      await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(r => {
-        this.Users = r.data
-        this.Teams = this.Users.filter(function (item) {
-          return item._id !== user
+      if (!this.loading) {
+        this.loading = true
+        var user = this.$store.state.auth.user
+        await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(r => {
+          this.Users = r.data
+          this.Teams = this.Users.filter(function (item) {
+            return item._id !== user
+          })
         })
-      })
-      await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
-        this.Team = r.data.filter(function (item) {
-          return item.user === user
-        })
+        await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
+          this.Team = r.data.filter(function (item) {
+            return item.user === user
+          })
 
-        if (this.Team.length === 0) {
-          await axios.post('https://backendfortasksquad13.onrender.com/api/create-Team', { user: user, friends: [] }).then((r) => {
-            this.Team = r.data
-          })
-        }
-        this.Team = this.Team[0]
-      })
-        .then(() => {
-          var adding = true
-          Array.prototype.forEach.call(this.Teams, User => {
-            try {
-              Array.prototype.forEach.call(this.Team.friends, item => {
-                if (item.user === User._id) {
-                  User.status = item.status
-                  adding = false
-                }
-              })
-            }
-            catch {
-              User.status = 'Ajouter'
-            }
-            if (adding) {
-              User.status = 'Ajouter'
-            }
-            adding = true
-          })
+          if (this.Team.length === 0) {
+            await axios.post('https://backendfortasksquad13.onrender.com/api/create-Team', { user: user, friends: [] }).then((r) => {
+              this.Team = r.data
+            })
+          }
+          this.Team = this.Team[0]
         })
-      this.TeamsCopy = this.Teams
+          .then(() => {
+            var adding = true
+            Array.prototype.forEach.call(this.Teams, User => {
+              try {
+                Array.prototype.forEach.call(this.Team.friends, item => {
+                  if (item.user === User._id) {
+                    User.status = item.status
+                    adding = false
+                  }
+                })
+              }
+              catch {
+                User.status = 'Ajouter'
+              }
+              if (adding) {
+                User.status = 'Ajouter'
+              }
+              adding = true
+            })
+          })
+        this.TeamsCopy = this.Teams
+        this.loading = false
+      }
     },
   }
 }

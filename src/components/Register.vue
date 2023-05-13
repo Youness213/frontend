@@ -3,6 +3,9 @@
     <v-snackbar v-model="snackbar" top color="warning" flat>
       <span>Cette adresse email est déjà utiliser</span>
     </v-snackbar>
+    <v-snackbar v-model="snackbar1" top color="warning" flat>
+      <span>Votre compte a bien était créé</span>
+    </v-snackbar>
     <v-img class="align-center ml-16 mr-n16 px-15" cover width="1710" src="@/assets/3725.jpg">
       <v-card class="mx-auto" max-width="400" title="Création d'un compte">
         <v-form @submit.prevent ref="form">
@@ -10,7 +13,7 @@
             <v-text-field v-model="user.first" :rules="[required]" color="primary" label="Nom"
               variant="underlined"></v-text-field>
 
-            <v-text-field v-model="user.last" :rules="[required]" color="primary" label="Prénom"
+            <v-text-field v-model="user.last" :rules="[required]" color="primary" label="Surnom"
               variant="underlined"></v-text-field>
 
             <v-text-field v-model="user.email" :rules="[required]" color="primary" label="Email"
@@ -65,50 +68,54 @@ export default {
     },
     loading: false,
     snackbar: false,
+    snackbar1: false,
     show: false,
     terms: false
   }),
 
   methods: {
     async onSubmit() {
-      try {
-        var valid = (await this.$refs.form.validate()).valid
-        await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(r => {
-          r.data.forEach(element => {
-            if (element.email == this.email) {
-              valid = false
-              this.snackbar = true
-            }
-          });
-        })
-        if (valid) {
-          axios.post('https://backendfortasksquad13.onrender.com/api/create-users', this.user)
-            .then(async (res) => {
-              if (res.status == 200) {
-
-                await this.Sendit()
-                this.$router.push('/login')
-                this.user = {
-                  first: '',
-                  last: '',
-                  email: '',
-                  password: '',
-                  status: false
-                }
+      if (!this.loading) {
+        this.loading = true
+        try {
+          var valid = (await this.$refs.form.validate()).valid
+          await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(async (r) => {
+            await Array.prototype.forEach.call(r.data, element => {
+              if (element.email == this.email) {
+                valid = false
+                this.snackbar = true
               }
             })
-
+          })
+          if (valid) {
+            await axios.post('https://backendfortasksquad13.onrender.com/api/create-users', this.user)
+              .then(async (res) => {
+                if (res.status == 200) {
+                  await this.Sendit()
+                  this.$router.push('/login')
+                  this.user = {
+                    first: '',
+                    last: '',
+                    email: '',
+                    password: '',
+                    status: false
+                  }
+                }
+              })
+          }
         }
+        catch {
+          console.log('nope')
+        }
+        this.loading = false
       }
-      catch {
-        console.log('nope')
-      }
+
     },
     required(v) {
       return !!v || 'Champ requis'
     },
     async Sendit() {
-      await axios.post('https://backendfortasksquad13.onrender.com/email/send',{email:this.user.email,subject:"Email d'activation",text: "Votre compte viens d'être activer"}).then(r=>{console.log(r)})
+      await axios.post('https://backendfortasksquad13.onrender.com/email/send', { email: this.user.email, subject: "Email d'activation", text: "Votre compte viens d'être activer" }).then(r => { console.log(r) })
       /*await Email.send({
         Host: "smtp.elasticemail.com",
         Port: '2525',
