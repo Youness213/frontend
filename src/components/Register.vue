@@ -10,6 +10,19 @@
       <v-card class="mx-auto" max-width="400" title="Création d'un compte">
         <v-form @submit.prevent ref="form">
           <v-container>
+            <v-row justify="center">
+              <v-col cols="12" sm="9">
+
+                <v-text-field v-model="user.avatar" color="primary" label="Photo de profile"
+                  hint="Placez un lien d'une image/photo" variant="underlined"></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="3">
+
+                <v-avatar size="50">
+                  <v-img :src="user.avatar"></v-img>
+                </v-avatar>
+              </v-col>
+            </v-row>
             <v-text-field v-model="user.first" :rules="[required]" color="primary" label="Nom"
               variant="underlined"></v-text-field>
 
@@ -60,6 +73,7 @@ export default {
   data: () => ({
     form: true,
     user: {
+      avatar: 'https://randomuser.me/api/portraits/lego/0.jpg',
       first: '',
       last: '',
       email: '',
@@ -94,6 +108,7 @@ export default {
                   await this.Sendit()
                   this.$router.push('/login')
                   this.user = {
+                    avatar: 'https://randomuser.me/api/portraits/lego/0.jpg',
                     first: '',
                     last: '',
                     email: '',
