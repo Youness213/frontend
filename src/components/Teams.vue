@@ -170,9 +170,10 @@ export default {
           }
           await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
           await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
-          this.saveOrder()
           this.loading = false
         }
+        
+        this.saveOrder();
       }
 
     },
@@ -196,9 +197,9 @@ export default {
         })
         await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
         await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
-        this.saveOrder();
         this.loading = false
       }
+      this.saveOrder();
     },
     async saveOrder() {
       if (!this.loading) {
