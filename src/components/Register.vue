@@ -95,7 +95,7 @@ export default {
           var valid = (await this.$refs.form.validate()).valid
           await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(async (r) => {
             await Array.prototype.forEach.call(r.data, element => {
-              if (element.email == this.email) {
+              if (element.email == this.user.email) {
                 valid = false
                 this.snackbar = true
               }
