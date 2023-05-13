@@ -85,18 +85,25 @@ export default {
         if (!this.form) return
         try{
           this.loading = true
-        await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(r => {
-          r.data.forEach(element => {
+        await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(async(r) => {
+          await r.data.forEach(element => {
             if(element.email == this.email && element.password == this.password){
               this.loading = false
               this.$store.state.auth.user = element._id
               this.$store.state.auth.username = element.first + ' ' + element.last
               this.$store.state.auth.useremail = element.email
+              this.$store.state.auth.avatarlink = element.avatar
               this.fail = false
+              router.push('/DashBoard')
             }
-          });
+          }).then(()=>{
+            if(this.$store.state.auth.user === null){
+            
+            this.loading = false
+            this.snackbar = true
+            }
+          })
           
-        router.push('/DashBoard')
         })
         }catch{
           this.loading = false

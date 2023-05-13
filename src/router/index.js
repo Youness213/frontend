@@ -64,6 +64,10 @@ const routes = [
         component: () => import(/* webpackChunkName: "home" */ '@/views/Recover.vue'),
       },
       {
+        path: '',
+        redirect: 'LogIn'
+      },
+      {
         path: '*',
         redirect: 'LogIn'
       }

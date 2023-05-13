@@ -37,7 +37,7 @@
 
       <v-card>
         <v-list>
-          <v-list-item prepend-avatar="https://randomuser.me/api/portraits/lego/0.jpg" :title="$store.state.auth.username"
+          <v-list-item :prepend-avatar="$store.state.auth.avatarlink" :title="$store.state.auth.username"
             :subtitle="$store.state.auth.useremail"></v-list-item>
         </v-list>
 

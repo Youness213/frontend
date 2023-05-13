@@ -43,12 +43,12 @@
         </template>
         <v-card>
           <v-card-title>
-            <h2>Ajouter un nouveau Project</h2>
+            <h3>{{ (this.new) ? "Ajouter un nouveau Project":"Modifier ce nouveau Project" }}</h3>
           </v-card-title>
           <v-card-text>
             <v-text-field label="Titre" v-model="title" prepend-icon="mdi-pencil"></v-text-field>
             <!-- Date Picker -->
-            <v-text-field type="date" label="Délai" :rules="dateRules" v-model="due"
+            <v-text-field type="date" label="Délai" v-model="due"
               prepend-icon="mdi-calendar-range"></v-text-field>
             <v-textarea label="Détails" prepend-icon="mdi-note-edit" v-model="content"></v-textarea>
             <v-spacer></v-spacer>
@@ -77,7 +77,7 @@
                   class="pa-0 ma-0"><v-icon>mdi-trash-can</v-icon></v-btn>
                 <v-spacer></v-spacer>
                 <v-btn rounded="20" @click="changeStatus(v, i);"
-                  :color="(v.status == 'ongoing') ? 'warning' : (v.status == 'complete') ? 'success' : 'error'">{{ v.status
+                  :color="(v.status == 'ongoing') ? 'warning' : (v.status == 'complete') ? 'success' : 'error'">{{ (v.status == 'ongoing') ? 'En cours' : (v.status == 'complete') ? 'Finis' : 'Expirer'
                   }}</v-btn>
                 <v-btn :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show = !show"></v-btn>
               </v-card-actions>
@@ -199,7 +199,6 @@ export default {
       await axios.get('https://backendfortasksquad13.onrender.com/api/getproject').then(r => {
         this.projects = r.data
         var user = this.$store.state.auth.user
-        console.log(r.data, user)
         this.projects = this.projects.filter(function (item) {
           return item.user === user
         })

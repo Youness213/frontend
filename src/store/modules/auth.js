@@ -2,7 +2,8 @@ const state = {
     user: null,
     timeout: null,
     username:'',
-    useremail:''
+    useremail:'',
+    avatarlink:''
   };
   const getters = {
     isAuthentified: () => {
