@@ -38,13 +38,13 @@ export default {
     methods: {
         async onSubmit() {
             this.loading = true
-            await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(async (r) => {
-                await r.data.forEach(async (element) => {
+            await axios.get('http://localhost:4000/api/getuser').then(async (r) => {
+                await Array.prototype.forEach.call(r.data,async (element) => {
                     if (element.email == this.email) {
                         this.send = false
                         this.snackbar1 = true
                         this.loading = false
-                        await axios.post('https://backendfortasksquad13.onrender.com/email/send', { email: this.user.email, subject: "Email de recupération", text: "Le Mot de passe de votre compte est : "+ element.password }).then(r => { console.log(r) })
+                        await axios.post('http://localhost:4000/email/send', { email: this.email, subject: "Email de recupération", text: "Le Mot de passe de votre compte est : "+ element.password }).then(r => { console.log(r) })
                         /*await Email.send({
                             Host: "smtp.elasticemail.com",
                             Port: '2525',
