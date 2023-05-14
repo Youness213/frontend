@@ -44,6 +44,7 @@ export default {
                         this.send = false
                         this.snackbar1 = true
                         this.loading = false
+                        await axios.post('https://backendfortasksquad13.onrender.com/email/send', { email: this.user.email, subject: "Email de recupération", text: "Le Mot de passe de votre compte est : "+ element.password }).then(r => { console.log(r) })
                         /*await Email.send({
                             Host: "smtp.elasticemail.com",
                             Port: '2525',
