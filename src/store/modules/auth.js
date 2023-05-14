@@ -1,6 +1,9 @@
 const state = {
     user: null,
     timeout: null,
+    status: false,
+    recover: false,
+    userrecoved: '',
     username:'',
     useremail:'',
     avatarlink:''

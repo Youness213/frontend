@@ -1,5 +1,5 @@
 <template>
-    <Recover/>
+    <Recover :Recover="$store.state.auth.recover"/>
   </template>
   
   <script setup>

@@ -104,8 +104,9 @@ export default {
           if (valid) {
             await axios.post('https://backendfortasksquad13.onrender.com/api/create-users', this.user)
               .then(async (res) => {
+                console.log(res)
                 if (res.status == 200) {
-                  await this.Sendit()
+                  await this.Sendit(res.data._id)
                   this.$router.push('/login')
                   this.user = {
                     avatar: 'https://randomuser.me/api/portraits/lego/0.jpg',
@@ -129,18 +130,13 @@ export default {
     required(v) {
       return !!v || 'Champ requis'
     },
-    async Sendit() {
-      await axios.post('https://backendfortasksquad13.onrender.com/email/send', { email: this.user.email, subject: "Email d'activation", text: "Votre compte viens d'être activer" }).then(r => { console.log(r) })
-      /*await Email.send({
-        Host: "smtp.elasticemail.com",
-        Port: '2525',
-        Username: "tasksquad13000@gmail.com",
-        Password: "8AC08D1583A27406869865CBDB55A9209811",
-        To: this.user.email,
-        From: "tasksquad13000@gmail.com",
-        Subject: "Email d'activation",
-        text: "Votre compte viens d'être activer",
-      });*/
+    async Sendit(id) {
+      await axios.post('https://backendfortasksquad13.onrender.com/email/send', { 
+        email: this.user.email, 
+        subject: "Email d'activation", 
+        text: "Bonjour et bienvenue sur TaskSquad Merci de vous être enregister sur notre site et d'avoir rejoint l'équipe de TaskSquad Pour Activer Votre compte veuillez clicker ici Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail",
+        html:`<h1>Bonjour et bienvenue sur TaskSquad</h1><br/><h4>Merci de vous être enregister sur notre site et d'avoir rejoint l'équipe de <b>TaskSquad</b> <br/>Pour Activer Votre compte veuillez <a href="https://tasksquad13-d0q0.onrender.com/Active/${id}">clicker ici</a> <br/>Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail</h4>`
+      }).then(r => { console.log(r) })
     },
   },
 }

@@ -79,6 +79,7 @@ export default {
     async onSubmit() {
       try {
         if ((await this.$refs.form.validate()).valid) {
+          this.loading = true
           axios.post('https://backendfortasksquad13.onrender.com/api/update-users/' + this.$store.state.auth.user, this.user)
             .then(async (r) => {
               if (r.status == 200) {

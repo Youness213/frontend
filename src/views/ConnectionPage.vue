@@ -1,5 +1,5 @@
 <template>
-  <Connexion />
+  <Connexion :Active="$store.state.auth.status"/>
 </template>
 
 <script setup>
