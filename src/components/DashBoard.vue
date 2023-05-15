@@ -167,7 +167,7 @@ export default {
           priority: 100,
           visibility: this.visibility
         }
-        axios.post('http://localhost:4000/api/create-project', project).then(r => {console.log(r)})
+        axios.post('https://backendfortasksquad13.onrender.com/api/create-project', project).then(r => {console.log(r)})
         await this.saveOrder()
         //collectionRef.add(project).then(() => {
         this.formReset();
