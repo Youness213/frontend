@@ -20,7 +20,7 @@
           </v-list>
 
         </v-menu>
-        <v-img src="@/assets/package.png" v-else></v-img>
+        <v-img src="@/assets/package.png" v-if="$store.state.auth.user !== null"></v-img>
       </v-app-bar-nav-icon>
 
       <v-toolbar-title>Task Squad</v-toolbar-title>
