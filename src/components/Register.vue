@@ -135,7 +135,7 @@ export default {
         email: this.user.email, 
         subject: "Email d'activation", 
         text: "Bonjour et bienvenue sur TaskSquad Merci de vous être enregister sur notre site et d'avoir rejoint l'équipe de TaskSquad Pour Activer Votre compte veuillez clicker ici Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail",
-        html:`<h1>Bonjour et bienvenue sur TaskSquad</h1><br/><h4>Merci de vous être enregister sur notre site et d'avoir rejoint l'équipe de <b>TaskSquad</b> <br/>Pour Activer Votre compte veuillez <a href="https://tasksquad.onrender.com/Active/${id}">clicker ici</a> <br/>Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail</h4>`
+        html:`<h1>Bonjour et bienvenue sur TaskSquad</h1><br/><h4>Merci de vous être enregister sur notre site et d'avoir rejoint l'équipe de <b>TaskSquad</b> <br/>Pour Activer Votre compte veuillez <a href="https://youness213.github.io/Active/${id}">clicker ici</a> <br/>Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail</h4>`
       }).then(r => { console.log(r) })
     },
   },
