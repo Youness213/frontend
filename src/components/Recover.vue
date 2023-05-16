@@ -80,7 +80,7 @@ export default {
                             email: this.email,
                             subject: "Email de recupération",
                             text: "Bonjour sur TaskSquad il semblerait que vous aillez oublier votre mot de passe sur TaskSquad Pas de soucis nous somme là pour vous aider clicker ici pour recuperer votre mot de passe Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail",
-                            html: `<h1>Bonjour sur TaskSquad</h1><br/><h4>il semblerait que vous aillez oublier votre mot de passe sur <b>TaskSquad</b> <br/>Pas de soucis nous somme là pour vous aider <a href="https://youness213.github.io/frontend/getback/${element._id}">clicker ici</a> pour recuperer votre mot de passe <br/>Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail</h4>`
+                            html: `<h1>Bonjour sur TaskSquad</h1><br/><h4>il semblerait que vous aillez oublier votre mot de passe sur <b>TaskSquad</b> <br/>Pas de soucis nous somme là pour vous aider <a href="http://localhost:8080/getback/${element._id}">clicker ici</a> pour recuperer votre mot de passe <br/>Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail</h4>`
 
                         })
                             .then(r => { console.log(r) })
