@@ -50,11 +50,11 @@
             <!-- Date Picker -->
             <v-row>
               <v-col>
-              <VueDatePicker v-model="due" range />
+                <VueDatePicker v-model="due" range />
               </v-col>
               <v-col>
-              <v-select label="Select" v-model="visibility"
-                :items="['Tous le monde', 'Amis seulement', 'Moi uniquement']" variant="outlined"></v-select>
+                <v-select label="Select" v-model="visibility"
+                  :items="['Tous le monde', 'Amis seulement', 'Moi uniquement']" variant="outlined"></v-select>
               </v-col>
             </v-row>
             <v-textarea label="Détails" prepend-icon="mdi-note-edit" v-model="content" variant="outlined"></v-textarea>
@@ -76,11 +76,13 @@
       <v-col cols="12" xs="12" sm="4" md="3" lg="2" v-for="(    v, i    ) in     projects    " :key="v.ID">
         <v-hover>
           <template v-slot:default="{ isHovering, props }">
-            <v-card :title="v.title" max-height="200" max-width="400"
-              v-bind="props" :elevation="isHovering ? 20 : 5">
+            <v-card :title="v.title" max-height="200" max-width="400" v-bind="props" :elevation="isHovering ? 20 : 5">
               <v-card-subtitle>
-                <span>Dernier delai : {{ new Date(v.enddue).toLocaleString('fr-FR', { timeZone: 'UTC' }) }}<br/>
-                visible pour {{ (v.visibility=='Tous le monde')?'Tous': (v.visibility=='Amis seulement')? 'les amis':'moi seulement'  }}</span>
+                <span>Dernier delai : {{ new Date(v.enddue).toLocaleString('fr-FR', { timeZone: 'UTC' }) }}<br />
+                  visible pour {{ (v.visibility == 'Tous le monde') ? 'Tous' : (v.visibility == 'Amis seulement') ?
+                    'les amis' : 'moi seulement' }}<br/>
+                    créé par {{ v.creator }}</span>
+
               </v-card-subtitle>
               <v-card-actions>
                 <v-btn icon @click=" editFrom(v); dialog = true" class="pa-0 ma-0"><v-icon>mdi-pencil</v-icon></v-btn>
@@ -132,7 +134,6 @@ export default {
       visibility: '',
       show: false,
       alerta: false,
-      Team:{},
       dateRules: [
         v => (v.length >= 4) || 'Format invalide'
       ],
@@ -140,7 +141,7 @@ export default {
       id: null
     }
   },
-  components:{
+  components: {
     VueDatePicker
   },
   async mounted() {
@@ -152,13 +153,12 @@ export default {
 
   methods: {
     async submit() {
-      console.log('ici')
-      console.log(this.due[0])
-      if (this.title.length > 0 && this.due !== null && this.new) {
+      if (this.title.length > 0 && this.due !== null && this.new && this.due !== null) {
         this.loading = true;
 
         const project = {
           user: this.$store.state.auth.user,
+          creator : this.$store.state.auth.username,
           title: this.title,
           content: this.content,
           startdue: this.due[0],
@@ -167,7 +167,7 @@ export default {
           priority: 100,
           visibility: this.visibility
         }
-        axios.post('https://backendfortasksquad13.onrender.com/api/create-project', project).then(r => {console.log(r)})
+        axios.post('https://backendfortasksquad13.onrender.com/api/create-project', project).then(r => { console.log(r) })
         await this.saveOrder()
         //collectionRef.add(project).then(() => {
         this.formReset();
@@ -205,25 +205,20 @@ export default {
       this.content = '';
       this.due = null;
       this.id = null;
-      this.visibility= ''
+      this.visibility = ''
     },
     editFrom(item) {
       this.title = item.title;
       this.content = item.content;
       this.due = [item.startdue, item.enddue];
       this.id = item._id
-      
-      this.visibility= item.visibility
+
+      this.visibility = item.visibility
       this.new = false
     },
     async filterProjects(status) {
-      await axios.get('https://backendfortasksquad13.onrender.com/api/getproject').then(r => {
-        this.projects = r.data
-        var user = this.$store.state.auth.user
-        this.projects = this.projects.filter(function (item) {
-          return item.user === user
-        })
-      })
+      
+      this.projects = this.projectsCopy
 
       if (status === "complete") {
         this.projects = this.projects.filter(function (item) {
@@ -271,7 +266,7 @@ export default {
       // UPDATE DATABASE
       axios.post('https://backendfortasksquad13.onrender.com/api/update-project/' + value._id, currentProject)
       // UPDATE LOCAL DATA
-
+      this.saveOrder()
     },
 
     async deleteProject() {
@@ -281,29 +276,38 @@ export default {
     },
 
     async saveOrder() {
-      await axios.get('https://backendfortasksquad13.onrender.com/api/getproject').then(r => {
-        this.projects = r.data
-        var user = this.$store.state.auth.user
-        this.projects = this.projects.filter(async function (item) {
-          if (item.visibility == 'Amis seulement') {
-            await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
-              this.Team = r.data.filter(function (item) {
-                return item.user === user
-              })
 
-              if (this.Team.length === 0) {
-                await axios.post('https://backendfortasksquad13.onrender.com/api/create-Team', { user: user, friends: [] }).then((r) => {
-                  this.Team = r.data
-                })
-              }
-              this.Team = this.Team[0]
+      var user = this.$store.state.auth.user
+      var team = null
+      await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
+        team = r.data.filter(function (item) {
+          return item.user === user
+        })
+        if (team.length === 0) {
+          await axios.post('https://backendfortasksquad13.onrender.com/api/create-Team', { user: user, friends: [] }).then((r) => {
+            team = r.data
+          })
+        }
+      })
+      team = team[0]
+      await axios.get('https://backendfortasksquad13.onrender.com/api/getproject').then(r => {
+        Array.prototype.forEach.call(r.data, item => {
+          if (item.visibility == 'Amis seulement') {
+            Array.prototype.forEach.call(team.friends,element =>{
+              if(element.user === item.user && element.status === 'Amis'){
+              this.projects.push(item)
+            }
             })
-            return this.Team.friends.includes({user: item.user, status:"Amis"})
           }
-          else if (item.visibility == 'Moi uniquement') {
-            return item.user === user
+          if (item.visibility == 'Moi uniquement') {
+            if (item.user === user) {
+              this.projects.push(item)
+            }
           }
-          return item.visibility === 'Tous le monde'
+          if (item.visibility == 'Tous le monde') {
+            this.projects.push(item)
+          }
+
         })
       })
       this.projectsCopy = this.projects

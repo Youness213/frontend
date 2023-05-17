@@ -116,7 +116,12 @@ export default {
               return item.user === value._id
             })
           })
+          if(senconduser.length === 0){
+            senconduser = { user: value._id, friends: [] }
+          }
+          else{
           senconduser = senconduser[0]
+          }
           let user = this.$store.state.auth.user
           switch (status) {
             case 'En Attente':
@@ -170,9 +175,8 @@ export default {
           }
           await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
           await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
-          this.loading = false
         }
-        
+        this.loading = false
         this.saveOrder();
       }
 
