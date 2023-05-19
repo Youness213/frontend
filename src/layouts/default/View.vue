@@ -1,35 +1,33 @@
 <template>
   <div>
     <v-toolbar dark prominent image="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg">
-      <v-app-bar-nav-icon>
-        <v-menu activator="parent" transition="slide-x-transition" v-if="$store.state.auth.user === null">
-          <template v-slot:activator="{ props }">
-            <v-btn density="comfortable" icon="mdi-format-list-checkbox" v-bind="props" large>
-
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item v-for="(item, index) in items" :key="index">
-              <v-list-item-title>
-                <v-btn @click="$router.push(item.route)" elevation="0">
-
-                  {{ item.title }}
-                </v-btn>
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-
-        </v-menu>
-        <v-img src="@/assets/package.png" v-if="$store.state.auth.user !== null"></v-img>
-      </v-app-bar-nav-icon>
-
-      <v-toolbar-title>Task Squad</v-toolbar-title>
-
+      <v-toolbar-title>
+        <v-container @click="$router.push('/home')">
+          <v-row justify="start">
+            <v-col cols="12" sm="2">
+              <v-img src="https://i.imgur.com/FlG1OPq.png" width="400" />
+            </v-col>
+            <v-col cols="12" sm="8" class="mt-2 ml-n5">
+              <span >Task Squad</span>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-toolbar-title>
       <v-spacer></v-spacer>
-
-      <v-btn icon v-if="$store.state.auth.user !== null" @click="$router.push('/login');$store.state.auth.user = null">
+      <v-spacer></v-spacer>
+      <v-row v-if="$store.state.auth.user !== null" justify="end" >
+        <v-btn icon  @click="$router.push('/login'); $store.state.auth.user = null" class="mr-10">
         <v-icon>mdi-logout</v-icon>
       </v-btn>
+      </v-row>
+      <v-row v-else justify="end">
+        <v-btn @click="$router.push('/login');">
+          Se connecter
+        </v-btn>
+        <v-btn @click="$router.push('/register');" class="mr-5">
+          S'inscrire
+        </v-btn>
+      </v-row>
     </v-toolbar>
   </div>
   <v-layout v-if="$store.state.auth.user !== null">
@@ -49,7 +47,7 @@
           <v-list-item prepend-icon="mdi-account-box" title="Mon compte" @click="$router.push('/Account')"></v-list-item>
         </v-list>
       </v-card>
-        <v-spacer></v-spacer>
+      <v-spacer></v-spacer>
     </v-navigation-drawer>
 
     <v-main style="height: auto">
@@ -57,13 +55,13 @@
     </v-main>
   </v-layout>
   <v-main v-else>
-      <router-view />
-    </v-main>
+    <router-view />
+  </v-main>
 </template>
 
 <script>
 export default {
-    name:'default_Component',
+  name: 'default_Component',
   data: () => ({
     items: [
       { title: 'Acceuil', route: '/Home' },

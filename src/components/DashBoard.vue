@@ -73,7 +73,7 @@
       </center>
     </div>
     <v-row justify="center">
-      <v-col cols="12" xs="12" sm="4" md="3" lg="2" v-for="(    v, i    ) in     projects    " :key="v.ID">
+      <v-col cols="12" xs="12" sm="4" md="3" lg="3" v-for="(    v, i    ) in     projects    " :key="v.ID">
         <v-hover>
           <template v-slot:default="{ isHovering, props }">
             <v-card :title="v.title" max-height="200" max-width="400" v-bind="props" :elevation="isHovering ? 20 : 5">
@@ -276,7 +276,7 @@ export default {
     },
 
     async saveOrder() {
-
+      this.projects.length =0
       var user = this.$store.state.auth.user
       var team = null
       await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
@@ -293,6 +293,9 @@ export default {
       await axios.get('https://backendfortasksquad13.onrender.com/api/getproject').then(r => {
         Array.prototype.forEach.call(r.data, item => {
           if (item.visibility == 'Amis seulement') {
+            if(item.user === user){
+              this.projects.push(item)
+            }
             Array.prototype.forEach.call(team.friends,element =>{
               if(element.user === item.user && element.status === 'Amis'){
               this.projects.push(item)
