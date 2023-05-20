@@ -35,7 +35,7 @@
             <v-card>
               <v-card-title class="text-h5">
                 Qui sommes nous?
-                <v-btn :icon="show1 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show1 = !show1"></v-btn>
+                <v-btn :icon="show1 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show1 = !show1" flat></v-btn>
               </v-card-title>
               <v-expand-transition>
                 <div v-show="show1">
@@ -92,7 +92,7 @@
             <v-card class="my-5  ">
               <v-card-title class="text-h5">
                 Pourquoi TaskSquad et pas un autre?
-                <v-btn :icon="show2 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show2 = !show2"></v-btn>
+                <v-btn :icon="show2 ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show2 = !show2" flat></v-btn>
               </v-card-title>
               <v-expand-transition>
                 <div v-show="show2">
