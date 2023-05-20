@@ -184,6 +184,11 @@ export default {
       show3: false
     }
   },
+  mounted(){
+    if(this.$store.state.auth.user !== null){
+      this.$router.push('/dashboard')
+    }
+  }
 
 }
 </script>

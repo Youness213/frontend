@@ -66,7 +66,7 @@ const routes = [
       },
       {
         path: '',
-        redirect: 'LogIn'
+        redirect: 'home'
       },
       {
         path: '*',
