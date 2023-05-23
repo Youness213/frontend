@@ -22,10 +22,10 @@
       </v-row>
       <v-row v-else justify="end">
         <v-btn @click="$router.push('/login');">
-          Se connecter
+          <b>Se connecter</b>
         </v-btn>
         <v-btn @click="$router.push('/register');" class="mr-5">
-          S'inscrire
+          <b>S'inscrire</b>
         </v-btn>
       </v-row>
     </v-toolbar>

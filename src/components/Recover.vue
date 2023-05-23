@@ -1,86 +1,85 @@
 <template>
-    <div class="fill-height ">
-        <v-snackbar v-model="snackbar" top color="warning" flat>
-            <span>Votre email n'est pas associer à un compte</span>
-        </v-snackbar>
-        <v-snackbar v-model="snackbar2" top color="success" flat>
-            <span>Votre compte à bien était mis à jour</span>
-        </v-snackbar>
-        <v-snackbar v-model="snackbar1" top color="primary" flat>
-            <span>Un email contenant votre mot de passe viens d'être envoyer</span>
-        </v-snackbar>
-        <v-img class="align-center ml-16 mr-n16 px-15" cover width="1710" src="@/assets/3725.jpg">
-            <v-card v-if="Recover" class="mx-auto px-6 py-8 align-center text-center" elevation="15" max-width="400"
-                title="Recupérer mon compte"><v-form v-model="form" @submit.prevent="onSubmit">
-                    <v-text-field v-model="password" :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                        :type="show ? 'text' : 'password'" @click:append="show = !show" :readonly="loading"
-                        :rules="[required]" clearable label="Mot de passe"></v-text-field>
+  <div class="fill-height ">
+    <v-snackbar v-model="snackbar" top color="warning" flat>
+      <span>Votre email n'est pas associer à un compte</span>
+    </v-snackbar>
+    <v-snackbar v-model="snackbar2" top color="success" flat>
+      <span>Votre compte à bien était mis à jour</span>
+    </v-snackbar>
+    <v-snackbar v-model="snackbar1" top color="primary" flat>
+      <span>Un email de récupération viens d'être envoyer</span>
+    </v-snackbar>
+    <v-img class="align-center ml-16 mr-n16 px-15" cover width="1710" src="@/assets/3725.jpg">
+      <v-card v-if="Recover" class="mx-auto px-6 py-8 align-center text-center" elevation="15" max-width="400"
+        title="Recupérer mon compte"><v-form v-model="form" @submit.prevent="onSubmit">
+          <v-text-field v-model="password" :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="show ? 'text' : 'password'" @click:append="show = !show" :readonly="loading" :rules="[required]"
+            clearable label="Mot de passe"></v-text-field>
 
-                    <v-text-field v-model="password1" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                        :type="show1 ? 'text' : 'password'" @click:append="show1 = !show1" :readonly="loading"
-                        :rules="[required]" clearable label="Confirmer mot de passe"></v-text-field>
-                    <br>
+          <v-text-field v-model="password1" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="show1 ? 'text' : 'password'" @click:append="show1 = !show1" :readonly="loading" :rules="[required]"
+            clearable label="Confirmer mot de passe"></v-text-field>
+          <br>
 
 
-                    <v-btn :disabled="!form" :loading="loading" block color="success" size="large"
-                        variant="elevated" @click="ChangePass()">
-                        Changer mon mot de passe
-                    </v-btn>
-                </v-form>
-            </v-card>
-            <v-card class="mx-auto px-6 py-8 align-center text-center" elevation="15" max-width="400" v-else
-                title="Recupérer mon compte">
+          <v-btn :disabled="!form" :loading="loading" block color="success" size="large" variant="elevated"
+            @click="ChangePass()">
+            Changer mon mot de passe
+          </v-btn>
+        </v-form>
+      </v-card>
+      <v-card class="mx-auto px-6 py-8 align-center text-center" elevation="15" max-width="400" v-else
+        title="Recupérer mon compte">
 
-                <v-text-field v-model="email" class="mb-2" clearable label="Email"></v-text-field>
+        <v-text-field v-model="email" class="mb-2" clearable label="Email"></v-text-field>
 
-                <br>
+        <br>
 
-                <v-btn :loading="loading" block @click="onSubmit()" color="success" size="large" variant="elevated">
-                    M'envoyer par email
-                </v-btn>
-            </v-card>
-        </v-img>
-    </div>
+        <v-btn :loading="loading" block @click="onSubmit()" color="success" size="large" variant="elevated">
+          M'envoyer par email
+        </v-btn>
+      </v-card>
+    </v-img>
+  </div>
 </template>
   
 <script>
 import axios from 'axios'
 
 export default {
-    name: 'Recover_Component',
-    props: {
-        Recover: {
-            type: Boolean,
-            default: false
-        }
-    },
-    data: () => ({
-        email: null,
-        password: '',
-        password1: '',
-        loading: false,
-        snackbar: false,
-        snackbar1: false,
-        snackbar2: false,
-        send: true,
-        show: false,
-        show1: false,
-    }),
+  name: 'Recover_Component',
+  props: {
+    Recover: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: () => ({
+    email: null,
+    password: '',
+    password1: '',
+    loading: false,
+    snackbar: false,
+    snackbar1: false,
+    snackbar2: false,
+    send: true,
+    show: false,
+    show1: false,
+  }),
 
-    methods: {
-        async onSubmit() {
-            this.loading = true
-            await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(async (r) => {
-                await Array.prototype.forEach.call(r.data, async (element) => {
-                    if (element.email == this.email) {
-                        this.send = false
-                        this.snackbar1 = true
-                        this.loading = false
-                        await axios.post('https://backendfortasksquad13.onrender.com/email/send', {
-                            email: this.email,
-                            subject: "Email de recupération",
-                            text: "Bonjour sur TaskSquad il semblerait que vous aillez oublier votre mot de passe sur TaskSquad Pas de soucis nous somme là pour vous aider clicker ici pour recuperer votre mot de passe Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail",
-                            html: `<!DOCTYPE html>
+  methods: {
+    async onSubmit() {
+      this.loading = true
+      await axios.get('http://localhost:4000/api/getuser').then(async (r) => {
+        console.log(r)
+        await Array.prototype.forEach.call(r.data, async (element) => {
+          if (element.email == this.email) {
+            this.send = false
+            await axios.post('http://localhost:4000/email/send', {
+              email: this.email,
+              subject: "Email de recupération",
+              text: "Bonjour sur TaskSquad il semblerait que vous aillez oublier votre mot de passe sur TaskSquad Pas de soucis nous somme là pour vous aider clicker ici pour recuperer votre mot de passe Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail",
+              html: `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
 	<meta charset="utf-8">
@@ -151,9 +150,9 @@ export default {
             </tr>
             <tr>
                 <td style="padding:30px;background-color:#ffffff;">
-                    <h1 style="margin-top:0;margin-bottom:30px;font-size:40px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;text-align:center;font-family: 'Playfair Display', serif;color:#000032">Activation de votre compte!</h1>
+                    <h1 style="margin-top:0;margin-bottom:30px;font-size:40px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;text-align:center;font-family: 'Playfair Display', serif;color:#000032">Récupération de votre compte!</h1>
                     <p style="margin:0;font-family: 'Roboto', sans-serif;">
-                        Cher(e) ${this.user.first},
+                        Cher(e) ${element.first},
                         <br>
                         Nous sommes ravis de vous accueillir sur notre plateforme ! Afin de récupérer votre compte et changer votre mot de passe veuillez cliquer sur le boutton ci-dessous :</p>
                         <p style="margin:0;"><a href="http://localhost:8080/getback/${element._id}" style="background: #234e9d; text-decoration: none; padding: 10px 25px; margin-top: 25px; color: #ffffff; border-radius: 4px; display:inline-block; mso-padding-alt:0;text-underline-color:#ff3884;  "><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%;mso-text-raise:20pt">&nbsp;</i><![endif]--><span style="mso-text-raise:10pt;font-weight:bold;">Activer votre compte</span><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%">&nbsp;</i><![endif]--></a></p>
@@ -210,36 +209,41 @@ export default {
 </body>
 </html> `
 
-                        })
-                            .then(r => { console.log(r) })
-                    }
-                });
-                if (this.send) {
-                    this.snackbar = true
-                    this.loading = false
-                }
             })
-        },
-        async ChangePass() {
-            if (!this.loading) {
-                this.loading = true
-                if (this.password === this.password1) {
-                    await axios.get('https://backendfortasksquad13.onrender.com/api/edit-users/' + this.$store.state.auth.userrecoved).then(async (r) => {
-                        console.log(r.data)
-                        r.data.password = this.password
-                        this.snackbar2 = true
-                        await axios.post("https://backendfortasksquad13.onrender.com/api/update-users/" + r.data._id, r.data).then(async (r) => {
-                            this.$store.state.auth.user = r.data._id
-                            this.$store.state.auth.username = r.data.first + ' ' + r.data.last
-                            this.$store.state.auth.useremail = r.data.email
-                            this.$store.state.auth.avatarlink = r.data.avatar
-                            setTimeout(function () {}, 10000);
-                            this.$router.push('/DashBoard')
-                        })
-                    })
-                }
-            }
+              .then(r => { console.log(r)
+              if(r.status === 200){
+                
+            this.loading = false
+            this.snackbar1 = true
+              } })
+          }
+        });
+        if (this.send) {
+          this.snackbar = true
+          this.loading = false
         }
+      })
     },
+    async ChangePass() {
+      if (!this.loading) {
+        this.loading = true
+        if (this.password === this.password1) {
+          await axios.get('http://localhost:4000/api/edit-users/' + this.$store.state.auth.userrecoved).then(async (r) => {
+            console.log(r.data)
+            r.data.password = this.password
+            this.snackbar2 = true
+            await axios.post("http://localhost:4000/api/update-users/" + r.data._id, r.data).then(async (r) => {
+              this.$store.state.auth.user = r.data._id
+              this.$store.state.auth.username = r.data.first + ' ' + r.data.last
+              this.$store.state.auth.useremail = r.data.email
+              this.$store.state.auth.avatarlink = r.data.avatar
+              setTimeout(function () { }, 10000);
+              this.$router.push('/DashBoard')
+            })
+          })
+        }
+      }
+    }
+  },
 }
 </script>

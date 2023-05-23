@@ -75,12 +75,12 @@ const routes = [
       {
         path:'Active/:id',
         redirect:(to)=>{
-          axios.get('https://backendfortasksquad13.onrender.com/api/edit-users/'+to.params.id).then(async (r) =>{
+          axios.get('http://localhost:4000/api/edit-users/'+to.params.id).then(async (r) =>{
             
               if(r.data._id === to.params.id){
                 r.data.status =true
                 store.state.auth.status = true
-                axios.post('https://backendfortasksquad13.onrender.com/api/update-users/' + r.data._id, r.data)
+                axios.post('http://localhost:4000/api/update-users/' + r.data._id, r.data)
               }
           })
           return {path:'LogIn'}
@@ -89,7 +89,7 @@ const routes = [
       {
         path:'getback/:id',
         redirect:(to)=>{
-          axios.get('https://backendfortasksquad13.onrender.com/api/edit-users/'+to.params.id).then(r =>{
+          axios.get('http://localhost:4000/api/edit-users/'+to.params.id).then(r =>{
                 store.state.auth.recover = true
                 store.state.auth.userrecoved = r.data._id
           })

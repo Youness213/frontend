@@ -48,13 +48,16 @@
           <v-card-text>
             <v-text-field label="Titre" v-model="title" prepend-icon="mdi-pencil" variant="outlined"></v-text-field>
             <!-- Date Picker -->
+            <VueDatePicker v-model="due" range class="mb-5">
+            </VueDatePicker>
             <v-row>
               <v-col>
-                <VueDatePicker v-model="due" range />
+                <v-select label="Priorité" v-model="priority" :items="['Faible', 'Normal', 'Haute']"
+                  variant="outlined"></v-select>
               </v-col>
               <v-col>
-                <v-select label="Select" v-model="visibility"
-                  :items="['Tous le monde', 'Amis seulement', 'Moi uniquement']" variant="outlined"></v-select>
+                <v-select label="Visibilité" v-model="visibility" :items="['Mon équipe', 'Moi uniquement']"
+                  variant="outlined"></v-select>
               </v-col>
             </v-row>
             <v-textarea label="Détails" prepend-icon="mdi-note-edit" v-model="content" variant="outlined"></v-textarea>
@@ -76,12 +79,11 @@
       <v-col cols="12" xs="12" sm="4" md="3" lg="3" v-for="(    v, i    ) in     projects    " :key="v.ID">
         <v-hover>
           <template v-slot:default="{ isHovering, props }">
-            <v-card :title="v.title" max-height="200" max-width="400" v-bind="props" :elevation="isHovering ? 20 : 5">
+            <v-card :title="v.title" v-bind="props" :elevation="isHovering ? 20 : 5">
               <v-card-subtitle>
                 <span>Dernier delai : {{ new Date(v.enddue).toLocaleString('fr-FR', { timeZone: 'UTC' }) }}<br />
-                  visible pour {{ (v.visibility == 'Tous le monde') ? 'Tous' : (v.visibility == 'Amis seulement') ?
-                    'les amis' : 'moi seulement' }}<br/>
-                    créé par {{ v.creator }}</span>
+                  visible pour {{ v.visibility }}<br />
+                  créé par {{ v.creator }}</span>
 
               </v-card-subtitle>
               <v-card-actions>
@@ -92,6 +94,10 @@
                 <v-btn rounded="20" @click="changeStatus(v, i);"
                   :color="(v.status == 'ongoing') ? 'warning' : (v.status == 'complete') ? 'success' : 'error'">{{
                     (v.status == 'ongoing') ? 'En cours' : (v.status == 'complete') ? 'Finis' : 'Expirer'
+                  }}</v-btn>
+                <v-btn rounded="20" @click="changePriority(v, i);" v-if="v.status !== 'complete'"
+                  :color="(v.priority == 'Normal') ? 'warning' : (v.priority == 'Faible') ? 'success' : 'error'">{{
+                    v.priority
                   }}</v-btn>
                 <v-btn :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="show = !show"></v-btn>
               </v-card-actions>
@@ -132,6 +138,7 @@ export default {
       new: true,
       due: null,
       visibility: '',
+      priority: '',
       show: false,
       alerta: false,
       dateRules: [
@@ -148,6 +155,14 @@ export default {
     if (this.$store.state.auth.user === null) {
       this.$router.push('/login')
     }
+    await axios.get('http://localhost:4000/api/getproject').then(r => {
+        Array.prototype.forEach.call(r.data, async (item) => {
+          if(new Date(item.enddue) < new Date){
+            item.status = 'overdue'
+            await axios.post('http://localhost:4000/api/update-project/' + item._id, item)
+          }
+        })
+      })
     await this.saveOrder();
   },
 
@@ -158,16 +173,16 @@ export default {
 
         const project = {
           user: this.$store.state.auth.user,
-          creator : this.$store.state.auth.username,
+          creator: this.$store.state.auth.username,
           title: this.title,
           content: this.content,
           startdue: this.due[0],
           enddue: this.due[1],
           status: 'ongoing',
-          priority: 100,
+          priority: this.priority,
           visibility: this.visibility
         }
-        axios.post('https://backendfortasksquad13.onrender.com/api/create-project', project).then(r => { console.log(r) })
+        axios.post('http://localhost:4000/api/create-project', project).then(r => { console.log(r) })
         await this.saveOrder()
         //collectionRef.add(project).then(() => {
         this.formReset();
@@ -178,12 +193,12 @@ export default {
 
       }
       else if (!this.new) {
-        await axios.get('https://backendfortasksquad13.onrender.com/api/edit-project/' + this.id).then(async (r) => {
+        await axios.get('http://localhost:4000/api/edit-project/' + this.id).then(async (r) => {
 
           r.data.title = this.title
           r.data.content = this.content
           r.data.due = this.due
-          await axios.post('https://backendfortasksquad13.onrender.com/api/update-project/' + this.id, r.data)
+          await axios.post('http://localhost:4000/api/update-project/' + this.id, r.data)
         }).then(() => {
           this.saveOrder()
           //collectionRef.add(project).then(() => {
@@ -217,7 +232,7 @@ export default {
       this.new = false
     },
     async filterProjects(status) {
-      
+
       this.projects = this.projectsCopy
 
       if (status === "complete") {
@@ -248,67 +263,93 @@ export default {
       switch (currentProject.status) {
         case 'ongoing':
           var newStatus = 'complete'
+          var newpriority = 'Done'
+          var newAchivedBy = this.$store.state.auth.username
           break;
 
         case 'complete':
-          newStatus = 'overdue'
-          break;
-
-        case 'overdue':
           newStatus = 'ongoing'
+          newpriority = 'Normal'
+
+          newAchivedBy = ''
           break;
 
         default:
           break;
       }
-
+      currentProject.AchivedBy = newAchivedBy
       currentProject.status = newStatus
+      currentProject.priority = newpriority
       // UPDATE DATABASE
-      axios.post('https://backendfortasksquad13.onrender.com/api/update-project/' + value._id, currentProject)
+      axios.post('http://localhost:4000/api/update-project/' + value._id, currentProject)
+      // UPDATE LOCAL DATA
+      this.saveOrder()
+    },
+    changePriority(value, index) {
+
+      const currentProject = this.projects[index]
+      // LOGIC FOR STATUS UPDATE
+      switch (currentProject.priority) {
+        case 'Faible':
+          var newpriority = 'Normal'
+          break;
+
+        case 'Normal':
+          newpriority = 'Haute'
+          break;
+
+
+        case 'Haute':
+          newpriority = 'Faible'
+          break;
+
+        default:
+          break;
+      }
+      currentProject.priority = newpriority
+      // UPDATE DATABASE
+      axios.post('http://localhost:4000/api/update-project/' + value._id, currentProject)
       // UPDATE LOCAL DATA
       this.saveOrder()
     },
 
     async deleteProject() {
-      await axios.delete('https://backendfortasksquad13.onrender.com/api/delete-project/' + this.editItem._id)
+      await axios.delete('http://localhost:4000/api/delete-project/' + this.editItem._id)
         .then(this.saveOrder()).then(this.snackbar1 = true)
 
     },
 
     async saveOrder() {
-      this.projects.length =0
+      this.projects.length = 0
       var user = this.$store.state.auth.user
       var team = null
-      await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
+      await axios.get('http://localhost:4000/api/getTeam').then(async (r) => {
         team = r.data.filter(function (item) {
           return item.user === user
         })
         if (team.length === 0) {
-          await axios.post('https://backendfortasksquad13.onrender.com/api/create-Team', { user: user, friends: [] }).then((r) => {
+          await axios.post('http://localhost:4000/api/create-Team', { user: user, friends: [] }).then((r) => {
             team = r.data
           })
         }
       })
       team = team[0]
-      await axios.get('https://backendfortasksquad13.onrender.com/api/getproject').then(r => {
+      await axios.get('http://localhost:4000/api/getproject').then(r => {
         Array.prototype.forEach.call(r.data, item => {
-          if (item.visibility == 'Amis seulement') {
-            if(item.user === user){
+          if (item.visibility == 'Mon équipe') {
+            if (item.user === user) {
               this.projects.push(item)
             }
-            Array.prototype.forEach.call(team.friends,element =>{
-              if(element.user === item.user && element.status === 'Amis'){
-              this.projects.push(item)
-            }
+            Array.prototype.forEach.call(team.friends, element => {
+              if (element.user === item.user && element.status === 'Amis') {
+                this.projects.push(item)
+              }
             })
           }
           if (item.visibility == 'Moi uniquement') {
             if (item.user === user) {
               this.projects.push(item)
             }
-          }
-          if (item.visibility == 'Tous le monde') {
-            this.projects.push(item)
           }
 
         })

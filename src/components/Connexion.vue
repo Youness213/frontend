@@ -64,7 +64,7 @@ export default {
       if (!this.form) return
       try {
         this.loading = true
-        await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(async (r) => {
+        await axios.get('http://localhost:4000/api/getuser').then(async (r) => {
           await r.data.forEach(element => {
             if ((element.email == this.email || element.last == this.email) && element.password == this.password) {
               this.loading = false

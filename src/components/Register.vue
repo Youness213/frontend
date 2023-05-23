@@ -93,7 +93,7 @@ export default {
         this.loading = true
         try {
           var valid = (await this.$refs.form.validate()).valid
-          await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(async (r) => {
+          await axios.get('http://localhost:4000/api/getuser').then(async (r) => {
             await Array.prototype.forEach.call(r.data, element => {
               if (element.email == this.user.email) {
                 valid = false
@@ -102,12 +102,11 @@ export default {
             })
           })
           if (valid) {
-            await axios.post('https://backendfortasksquad13.onrender.com/api/create-users', this.user)
+            await axios.post('http://localhost:4000/api/create-users', this.user)
               .then(async (res) => {
                 console.log(res)
                 if (res.status == 200) {
                   await this.Sendit(res.data._id)
-                  this.$router.push('/login')
                   this.user = {
                     avatar: 'https://randomuser.me/api/portraits/lego/0.jpg',
                     first: '',
@@ -116,6 +115,9 @@ export default {
                     password: '',
                     status: false
                   }
+                  this.snackbar1 = true
+                  setTimeout(() => {}, 10000);
+                  this.$router.push('/login')
                 }
               })
           }
@@ -131,7 +133,7 @@ export default {
       return !!v || 'Champ requis'
     },
     async Sendit(id) {
-      await axios.post('https://backendfortasksquad13.onrender.com/email/send', {
+      await axios.post('http://localhost:4000/email/send', {
         email: this.user.email,
         subject: "Email d'activation",
         text: "Bonjour et bienvenue sur TaskSquad Merci de vous être enregister sur notre site et d'avoir rejoint l'équipe de TaskSquad Pour Activer Votre compte veuillez clicker ici Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail",

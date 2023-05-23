@@ -111,7 +111,7 @@ export default {
         this.loading = true
         if (status !== 'Amis') {
           let currentuser = this.Team
-          let senconduser = await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
+          let senconduser = await axios.get('http://localhost:4000/api/getTeam').then(async (r) => {
             return r.data.filter(function (item) {
               return item.user === value._id
             })
@@ -173,8 +173,8 @@ export default {
             default:
               break;
           }
-          await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
-          await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
+          await axios.post('http://localhost:4000/api/update-Team/' + currentuser._id, currentuser)
+          await axios.post('http://localhost:4000/api/update-Team/' + senconduser._id, senconduser)
         }
         this.loading = false
         this.saveOrder();
@@ -186,7 +186,7 @@ export default {
         this.loading = true
         let currentuser = this.Team
         let senconduserid = this.indexToEdit
-        let senconduser = await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
+        let senconduser = await axios.get('http://localhost:4000/api/getTeam').then(async (r) => {
           return r.data.filter(function (item) {
             return item.user === senconduserid
           })
@@ -199,8 +199,8 @@ export default {
         senconduser.friends = senconduser.friends.filter(function (item) {
           return item.user !== user
         })
-        await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + currentuser._id, currentuser)
-        await axios.post('https://backendfortasksquad13.onrender.com/api/update-Team/' + senconduser._id, senconduser)
+        await axios.post('http://localhost:4000/api/update-Team/' + currentuser._id, currentuser)
+        await axios.post('http://localhost:4000/api/update-Team/' + senconduser._id, senconduser)
         this.loading = false
       }
       this.saveOrder();
@@ -209,19 +209,19 @@ export default {
       if (!this.loading) {
         this.loading = true
         var user = this.$store.state.auth.user
-        await axios.get('https://backendfortasksquad13.onrender.com/api/getuser').then(r => {
+        await axios.get('http://localhost:4000/api/getuser').then(r => {
           this.Users = r.data
           this.Teams = this.Users.filter(function (item) {
             return item._id !== user
           })
         })
-        await axios.get('https://backendfortasksquad13.onrender.com/api/getTeam').then(async (r) => {
+        await axios.get('http://localhost:4000/api/getTeam').then(async (r) => {
           this.Team = r.data.filter(function (item) {
             return item.user === user
           })
 
           if (this.Team.length === 0) {
-            await axios.post('https://backendfortasksquad13.onrender.com/api/create-Team', { user: user, friends: [] }).then((r) => {
+            await axios.post('http://localhost:4000/api/create-Team', { user: user, friends: [] }).then((r) => {
               this.Team = r.data
             })
           }
