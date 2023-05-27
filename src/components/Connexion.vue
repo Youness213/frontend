@@ -3,6 +3,9 @@
     <v-snackbar v-model="snackbar" top color="error" flat>
       <span>Adresse email ou mot de passe incorrecte</span>
     </v-snackbar>
+    <v-snackbar v-model="snackbar1" top color="error" flat>
+      <span>Votre Compte n'est pas encore activer veuillez verifier votre adresse email</span>
+    </v-snackbar>
     <v-snackbar v-if="Active" v-model="Actice" top color="info" flat>
       <span>Votre comptre est maintenant actif</span>
     </v-snackbar>
@@ -54,9 +57,10 @@ export default {
     show: false,
     fail: true,
     snackbar: false,
-    Actice:true
+    snackbar1: false,
+    Actice: true
   }),
-  mounted(){
+  mounted() {
     this.$store.state.auth.status = false
   },
   methods: {
@@ -68,12 +72,17 @@ export default {
           await r.data.forEach(element => {
             if ((element.email == this.email || element.last == this.email) && element.password == this.password) {
               this.loading = false
-              this.$store.state.auth.user = element._id
-              this.$store.state.auth.username = element.first + ' ' + element.last
-              this.$store.state.auth.useremail = element.email
-              this.$store.state.auth.avatarlink = element.avatar
-              this.fail = false
-              router.push('/DashBoard')
+              if (element.status) {
+                this.$store.state.auth.user = element._id
+                this.$store.state.auth.username = element.first + ' ' + element.last
+                this.$store.state.auth.useremail = element.email
+                this.$store.state.auth.avatarlink = element.avatar
+                this.fail = false
+                router.push('/DashBoard')
+              }
+              else {
+                this.snackbar1 = true
+              }
             }
           }).then(() => {
             if (this.$store.state.auth.user === null) {

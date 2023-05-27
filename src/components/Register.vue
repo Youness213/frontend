@@ -107,7 +107,10 @@ export default {
                 console.log(res)
                 if (res.status == 200) {
                   await this.Sendit(res.data._id)
-                  this.user = {
+                  this.snackbar1 = true
+                  setTimeout(() => {
+                    this.$router.push('/login')
+                    this.user = {
                     avatar: 'https://randomuser.me/api/portraits/lego/0.jpg',
                     first: '',
                     last: '',
@@ -115,9 +118,8 @@ export default {
                     password: '',
                     status: false
                   }
-                  this.snackbar1 = true
-                  setTimeout(() => {}, 10000);
-                  this.$router.push('/login')
+                  }, 8000);
+                  
                 }
               })
           }

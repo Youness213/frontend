@@ -1,6 +1,6 @@
 <template>
   <v-snackbar v-model="snackbar" top color="warning" flat>
-    <span>Voulez vous supprimer cette ami?</span>
+    <span>Voulez vous retirer cette personne de votre équipe?</span>
     <v-btn flat color="warning" @click="snackbar = false; deleteFriend()" class="ml-5">oui</v-btn>
     <v-btn flat color="warning" @click=" snackbar = false;">non</v-btn>
   </v-snackbar>

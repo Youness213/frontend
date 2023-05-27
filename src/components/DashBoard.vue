@@ -83,7 +83,8 @@
               <v-card-subtitle>
                 <span>Dernier delai : {{ new Date(v.enddue).toLocaleString('fr-FR', { timeZone: 'UTC' }) }}<br />
                   visible pour {{ v.visibility }}<br />
-                  créé par {{ v.creator }}</span>
+                  créé par {{ v.creator }}</span><br />
+                <span v-if="v.AchivedBy != null">Finis par {{ v.AchivedBy }}</span>
 
               </v-card-subtitle>
               <v-card-actions>
@@ -145,7 +146,8 @@ export default {
         v => (v.length >= 4) || 'Format invalide'
       ],
       loading: false,
-      id: null
+      id: null,
+      team:null
     }
   },
   components: {
@@ -155,15 +157,11 @@ export default {
     if (this.$store.state.auth.user === null) {
       this.$router.push('/login')
     }
-    await axios.get('http://localhost:4000/api/getproject').then(r => {
-        Array.prototype.forEach.call(r.data, async (item) => {
-          if(new Date(item.enddue) < new Date){
-            item.status = 'overdue'
-            await axios.post('http://localhost:4000/api/update-project/' + item._id, item)
-          }
-        })
-      })
-    await this.saveOrder();
+    else {
+      
+        this.saveOrder();
+    }
+
   },
 
   methods: {
@@ -180,7 +178,8 @@ export default {
           enddue: this.due[1],
           status: 'ongoing',
           priority: this.priority,
-          visibility: this.visibility
+          visibility: this.visibility,
+          AchivedBy:null
         }
         axios.post('http://localhost:4000/api/create-project', project).then(r => { console.log(r) })
         await this.saveOrder()
@@ -271,7 +270,7 @@ export default {
           newStatus = 'ongoing'
           newpriority = 'Normal'
 
-          newAchivedBy = ''
+          newAchivedBy = null
           break;
 
         default:
@@ -320,27 +319,35 @@ export default {
     },
 
     async saveOrder() {
+      await axios.get('http://localhost:4000/api/getproject').then(r => {
+        Array.prototype.forEach.call(r.data, async (item) => {
+          if (new Date(item.enddue) < new Date) {
+            item.status = 'overdue'
+            await axios.post('http://localhost:4000/api/update-project/' + item._id, item)
+          }
+        })
+      })
       this.projects.length = 0
       var user = this.$store.state.auth.user
-      var team = null
+      
       await axios.get('http://localhost:4000/api/getTeam').then(async (r) => {
-        team = r.data.filter(function (item) {
+        this.team = r.data.filter(function (item) {
           return item.user === user
         })
-        if (team.length === 0) {
+        if (this.team.length === 0) {
           await axios.post('http://localhost:4000/api/create-Team', { user: user, friends: [] }).then((r) => {
-            team = r.data
+            this.team = r.data
           })
         }
       })
-      team = team[0]
+      this.team = this.team[0]
       await axios.get('http://localhost:4000/api/getproject').then(r => {
         Array.prototype.forEach.call(r.data, item => {
           if (item.visibility == 'Mon équipe') {
             if (item.user === user) {
               this.projects.push(item)
             }
-            Array.prototype.forEach.call(team.friends, element => {
+            Array.prototype.forEach.call(this.team.friends, element => {
               if (element.user === item.user && element.status === 'Amis') {
                 this.projects.push(item)
               }

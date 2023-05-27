@@ -7,7 +7,7 @@
       <span>Votre compte à bien était mis à jour</span>
     </v-snackbar>
     <v-snackbar v-model="snackbar1" top color="primary" flat>
-      <span>Un email de récupération viens d'être envoyer</span>
+      <span>Un email de récupération vous a était transmit</span>
     </v-snackbar>
     <v-img class="align-center ml-16 mr-n16 px-15" cover width="1710" src="@/assets/3725.jpg">
       <v-card v-if="Recover" class="mx-auto px-6 py-8 align-center text-center" elevation="15" max-width="400"
