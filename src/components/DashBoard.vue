@@ -373,7 +373,7 @@ export default {
     async Sendit(user,importance) {
       await axios.post('http://localhost:4000/email/send', {
         email: user.email,
-        subject: "Email d'activation",
+        subject: `Notification d'expiration d'une tâche ${importance}!`,
         text: "Bonjour et bienvenue sur TaskSquad Merci de vous être enregister sur notre site et d'avoir rejoint l'équipe de TaskSquad Pour Activer Votre compte veuillez clicker ici Si vous n'êtes pas à l'origine de cette demande veuillez ignorez ce mail",
         html: `<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -446,7 +446,7 @@ export default {
             </tr>
             <tr>
                 <td style="padding:30px;background-color:#ffffff;">
-                    <h1 style="margin-top:0;margin-bottom:30px;font-size:40px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;text-align:center;font-family: 'Playfair Display', serif;color:#000032">Notification d'expiration d'une tâche${importance}!</h1>
+                    <h1 style="margin-top:0;margin-bottom:30px;font-size:40px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;text-align:center;font-family: 'Playfair Display', serif;color:#000032">Notification d'expiration d'une tâche ${importance}!</h1>
                     <p style="margin:0;font-family: 'Roboto', sans-serif;">
                         Cher(e) ${user.first},
                         <br>
