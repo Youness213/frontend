@@ -19,7 +19,7 @@
             <v-text-field v-model="user.first" :rules="[required]" color="primary" label="Nom"
               variant="underlined"></v-text-field>
 
-            <v-text-field v-model="user.last" :rules="[required]" color="primary" label="Prénom"
+            <v-text-field v-model="user.last" :rules="[required]" color="primary" label="Surnom"
               variant="underlined"></v-text-field>
 
             <v-text-field v-model="user.email" :rules="[required]" color="primary" label="Email"

@@ -74,7 +74,7 @@ export default {
               this.loading = false
               if (element.status) {
                 this.$store.state.auth.user = element._id
-                this.$store.state.auth.username = element.first + ' ' + element.last
+                this.$store.state.auth.username = element.last
                 this.$store.state.auth.useremail = element.email
                 this.$store.state.auth.avatarlink = element.avatar
                 this.fail = false

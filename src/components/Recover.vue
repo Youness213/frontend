@@ -155,7 +155,7 @@ export default {
                         Cher(e) ${element.first},
                         <br>
                         Nous sommes ravis de vous accueillir sur notre plateforme ! Afin de récupérer votre compte et changer votre mot de passe veuillez cliquer sur le boutton ci-dessous :</p>
-                        <p style="margin:0;"><a href="http://localhost:8080/getback/${element._id}" style="background: #234e9d; text-decoration: none; padding: 10px 25px; margin-top: 25px; color: #ffffff; border-radius: 4px; display:inline-block; mso-padding-alt:0;text-underline-color:#ff3884;  "><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%;mso-text-raise:20pt">&nbsp;</i><![endif]--><span style="mso-text-raise:10pt;font-weight:bold;">Activer votre compte</span><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%">&nbsp;</i><![endif]--></a></p>
+                        <p style="margin:0;"><a href="http://localhost:8080/getback/${element._id}" style="background: #234e9d; text-decoration: none; padding: 10px 25px; margin-top: 25px; color: #ffffff; border-radius: 4px; display:inline-block; mso-padding-alt:0;text-underline-color:#ff3884;  "><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%;mso-text-raise:20pt">&nbsp;</i><![endif]--><span style="mso-text-raise:10pt;font-weight:bold;">Récupérer votre compte</span><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%">&nbsp;</i><![endif]--></a></p>
                         
                 </td>
                 
@@ -168,7 +168,7 @@ export default {
             <tr>
                 <td style="padding:30px;background-color:#ffffff;">
                     <p style="margin:0;font-family:'Roboto', sans-serif;">
-                    Si vous avez des questions ou rencontrez des difficultés lors de l'activation de votre compte, n'hésitez pas à nous contacter à [notre adresse e-mail] et nous serons ravis de vous aider.
+                    Si vous avez des questions ou rencontrez des difficultés lors de la récupération de votre compte, n'hésitez pas à nous contacter à tasksquad13000@gmail.com et nous serons ravis de vous aider.
                     <br>
                     Nous vous remercions de votre confiance et nous nous réjouissons de vous compter parmi nos utilisateurs.
                     <br>    

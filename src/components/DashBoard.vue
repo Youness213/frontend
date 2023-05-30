@@ -76,7 +76,7 @@
       </center>
     </div>
     <v-row justify="center">
-      <v-col cols="12" xs="12" sm="4" md="3" lg="3" v-for="(    v, i    ) in     projects    " :key="v.ID">
+      <v-col cols="12" xs="12" sm="4" md="4" lg="4" v-for="(    v, i    ) in     projects    " :key="v.ID">
         <v-hover>
           <template v-slot:default="{ isHovering, props }">
             <v-card :title="v.title" v-bind="props" :elevation="isHovering ? 20 : 5">
@@ -147,7 +147,7 @@ export default {
       ],
       loading: false,
       id: null,
-      team:null
+      team: null
     }
   },
   components: {
@@ -157,17 +157,17 @@ export default {
     if (this.$store.state.auth.user === null) {
       this.$router.push('/login')
     }
-    else {     
-        this.saveOrder();
+    else {
+      this.saveOrder();
     }
 
   },
 
   methods: {
     async submit() {
+      var thestatus = 'ongoing'
       if (this.title.length > 0 && this.due !== null && this.new && this.due !== null) {
         this.loading = true;
-
         const project = {
           user: this.$store.state.auth.user,
           creator: this.$store.state.auth.username,
@@ -175,11 +175,22 @@ export default {
           content: this.content,
           startdue: this.due[0],
           enddue: this.due[1],
-          status: 'ongoing',
+          status: thestatus,
           priority: this.priority,
           visibility: this.visibility,
-          AchivedBy:null
+          AchivedBy: null
         }
+        if (new Date(this.due[1]) < new Date) {
+          thestatus = 'overdue'
+          var importance = ''
+          if (project.priority === 'Haute') {
+            importance = 'importante'
+          }
+          await axios.get('http://localhost:4000/api/edit-users/' + project.user).then(r => {
+            this.Sendit(r.data, importance)
+          })
+        }
+        
         axios.post('http://localhost:4000/api/create-project', project).then(r => { console.log(r) })
         await this.saveOrder()
         //collectionRef.add(project).then(() => {
@@ -191,13 +202,31 @@ export default {
 
       }
       else if (!this.new) {
-        await axios.get('http://localhost:4000/api/edit-project/' + this.id).then(async (r) => {
-
-          r.data.title = this.title
-          r.data.content = this.content
-          r.data.due = this.due
-          await axios.post('http://localhost:4000/api/update-project/' + this.id, r.data)
-        }).then(() => {
+        this.loading = true;
+        const project = {
+          user: this.$store.state.auth.user,
+          creator: this.$store.state.auth.username,
+          title: this.title,
+          content: this.content,
+          startdue: this.due[0],
+          enddue: this.due[1],
+          status: thestatus,
+          priority: this.priority,
+          visibility: this.visibility,
+          AchivedBy: null
+        }
+        if (new Date(this.due[1]) < new Date) {
+          thestatus = 'overdue'
+          importance = ''
+          if (project.priority === 'Haute') {
+            importance = 'importante'
+          }
+          await axios.get('http://localhost:4000/api/edit-users/' + project.user).then(r => {
+            this.Sendit(r.data, importance)
+          })
+        }
+        
+        await axios.post('http://localhost:4000/api/update-project/' + this.id, project).then(() => {
           this.saveOrder()
           //collectionRef.add(project).then(() => {
           this.formReset();
@@ -225,7 +254,7 @@ export default {
       this.content = item.content;
       this.due = [item.startdue, item.enddue];
       this.id = item._id
-
+      this.priority = item.priority
       this.visibility = item.visibility
       this.new = false
     },
@@ -322,55 +351,61 @@ export default {
         Array.prototype.forEach.call(r.data, async (item) => {
           if (new Date(item.enddue) < new Date) {
             item.status = 'overdue'
-            var importance=''
-            if(item.priority === 'Haute'){
-              importance ='importante'
+            var importance = ''
+            if (item.priority === 'Haute') {
+              importance = 'importante'
             }
-            await axios.get('http://localhost:4000/api/edit-users/'+item.user).then(r=>{
-              this.Sendit(r.data,importance)
+            await axios.get('http://localhost:4000/api/edit-users/' + item.user).then(r => {
+              this.Sendit(r.data, importance)
             })
             await axios.post('http://localhost:4000/api/update-project/' + item._id, item)
           }
+          if (new Date(item.enddue) > new Date() && item.status === 'overdue') {
+            item.status = 'ongoing'
+            await axios.post('http://localhost:4000/api/update-project/' + item._id, item)
+          }
         })
-      })
-      this.projects.length = 0
-      var user = this.$store.state.auth.user
-      
-      await axios.get('http://localhost:4000/api/getTeam').then(async (r) => {
-        this.team = r.data.filter(function (item) {
-          return item.user === user
-        })
-        if (this.team.length === 0) {
-          await axios.post('http://localhost:4000/api/create-Team', { user: user, friends: [] }).then((r) => {
-            this.team = r.data
+      }).then(async () => {
+        this.projects.length = 0
+        var user = this.$store.state.auth.user
+
+        await axios.get('http://localhost:4000/api/getTeam').then(async (r) => {
+          this.team = r.data.filter(function (item) {
+            return item.user === user
           })
-        }
-      })
-      this.team = this.team[0]
-      await axios.get('http://localhost:4000/api/getproject').then(r => {
-        Array.prototype.forEach.call(r.data, item => {
-          if (item.visibility == 'Mon équipe') {
-            if (item.user === user) {
-              this.projects.push(item)
-            }
-            Array.prototype.forEach.call(this.team.friends, element => {
-              if (element.user === item.user && element.status === 'Amis') {
-                this.projects.push(item)
-              }
+          if (this.team.length === 0) {
+            await axios.post('http://localhost:4000/api/create-Team', { user: user, friends: [] }).then((r) => {
+              this.team = r.data
             })
           }
-          if (item.visibility == 'Moi uniquement') {
-            if (item.user === user) {
-              this.projects.push(item)
-            }
-          }
-
         })
+        this.team = this.team[0]
+        await axios.get('http://localhost:4000/api/getproject').then(r => {
+          Array.prototype.forEach.call(r.data, item => {
+            if (item.visibility == 'Mon équipe') {
+              if (item.user === user) {
+                this.projects.push(item)
+              }
+              Array.prototype.forEach.call(this.team.friends, element => {
+                if (element.user === item.user && element.status === 'Amis') {
+                  this.projects.push(item)
+                }
+              })
+            }
+            if (item.visibility == 'Moi uniquement') {
+              if (item.user === user) {
+                this.projects.push(item)
+              }
+            }
+
+          })
+        })
+        this.projectsCopy = this.projects
+        this.filterProjects('All')
       })
-      this.projectsCopy = this.projects
-      this.filterProjects('All')
+
     },
-    async Sendit(user,importance) {
+    async Sendit(user, importance) {
       await axios.post('http://localhost:4000/email/send', {
         email: user.email,
         subject: `Notification d'expiration d'une tâche ${importance}!`,
@@ -451,7 +486,7 @@ export default {
                         Cher(e) ${user.first},
                         <br>
                         Nous espérons que vous appréciez votre expérience sur notre plateforme ! Nous tenons à vous informer qu'une de vos tâches vient d'expirer. Veuillez prendre note de cette information et effectuer les actions nécessaires en conséquence.vous pouvez accéder au site en cliquant sur le boutton ci-dessous :</p>
-                        <p style="margin:0;"><a href="http://localhost:8080/dashboard" style="background: #234e9d; text-decoration: none; padding: 10px 25px; margin-top: 25px; color: #ffffff; border-radius: 4px; display:inline-block; mso-padding-alt:0;text-underline-color:#ff3884;  "><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%;mso-text-raise:20pt">&nbsp;</i><![endif]--><span style="mso-text-raise:10pt;font-weight:bold;">Activer votre compte</span><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%">&nbsp;</i><![endif]--></a></p>
+                        <p style="margin:0;"><a href="http://localhost:8080/dashboard" style="background: #234e9d; text-decoration: none; padding: 10px 25px; margin-top: 25px; color: #ffffff; border-radius: 4px; display:inline-block; mso-padding-alt:0;text-underline-color:#ff3884;  "><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%;mso-text-raise:20pt">&nbsp;</i><![endif]--><span style="mso-text-raise:10pt;font-weight:bold;">Voir la tâche</span><!--[if mso]><i style="letter-spacing: 25px;mso-font-width:-100%">&nbsp;</i><![endif]--></a></p>
                         
                 </td>
                 

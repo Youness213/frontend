@@ -228,7 +228,7 @@ export default {
             <tr>
                 <td style="padding:30px;background-color:#ffffff;">
                     <p style="margin:0;font-family:'Roboto', sans-serif;">
-                    Si vous avez des questions ou rencontrez des difficultés lors de l'activation de votre compte, n'hésitez pas à nous contacter à [notre adresse e-mail] et nous serons ravis de vous aider.
+                    Si vous avez des questions ou rencontrez des difficultés lors de l'activation de votre compte, n'hésitez pas à nous contacter à tasksquad13000@gmail.com et nous serons ravis de vous aider.
                     <br>
                     Nous vous remercions de votre confiance et nous nous réjouissons de vous compter parmi nos utilisateurs.
                     <br>    

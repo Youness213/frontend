@@ -24,8 +24,7 @@ const state = {
       await commit('setUser', data.ID)
     },
     async LogOut ({ commit }) {
-      const user = null
-      commit('logout', user)
+      commit('logout', null)
     }
   };
   
@@ -33,9 +32,17 @@ const state = {
     setUser (state, Login) {
       state.user = Login
     },
-    logout (state, user) {
-      state.user = user
-      state.modules = user
+    logout (state,user) {
+      state = {
+        user: user,
+        timeout: user,
+        status: user,
+        recover: user,
+        userrecoved: '',
+        username:'',
+        useremail:'',
+        avatarlink:''
+      }
     }
   };
   export default {
